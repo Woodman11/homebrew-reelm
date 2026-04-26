@@ -37,8 +37,13 @@ jobs:
 
       # Install the formula from this checkout (not the published tap).
       # That way a broken formula commit fails CI before it goes live.
-      - name: Install formula from local source
-        run: brew install --formula ./Formula/youtube-search.rb
+      # Modern brew rejects bare formula paths — formulae must live in a
+      # tap. `brew tap <name> <path>` registers our checkout as the tap,
+      # then we install via the fully-qualified name.
+      - name: Tap from checkout and install
+        run: |
+          brew tap Woodman11/youtube-search "$GITHUB_WORKSPACE"
+          brew install Woodman11/youtube-search/youtube-search
 
       # Smoke test: did the wrappers land on PATH and run at all?
       - name: Verify CLI binaries
