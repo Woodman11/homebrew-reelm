@@ -11,7 +11,9 @@ class YoutubeSearch < Formula
   def install
     libexec.install "paths.py", "server.py", "maintain.py", "search.py", "extension"
 
-    py = Formula["python@3.13"].opt_bin/"python3"
+    # Use the versioned python3.13 binary — the bare `python3` symlink
+    # isn't always present (e.g. on GitHub Actions macOS runners).
+    py = Formula["python@3.13"].opt_bin/"python3.13"
     ytdlp_bin = Formula["yt-dlp"].opt_bin
 
     {
