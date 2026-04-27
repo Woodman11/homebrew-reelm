@@ -36,21 +36,21 @@ jobs:
       # then we install via the fully-qualified name.
       - name: Tap from checkout and install
         run: |
-          brew tap Woodman11/youtube-search "$GITHUB_WORKSPACE"
-          brew install Woodman11/youtube-search/youtube-search
+          brew tap Woodman11/reelm "$GITHUB_WORKSPACE"
+          brew install Woodman11/reelm/reelm
 
       # Smoke test: did the wrappers land on PATH and run at all?
       - name: Verify CLI binaries
         run: |
-          which youtube-search youtube-search-server youtube-search-maintain
-          youtube-search --help
+          which reelm reelm-server reelm-maintain
+          reelm --help
 
       # Start the server in the background, then poll until it's listening.
       # Polling is necessary because the `&` returns instantly — without
       # the wait loop we'd race the bind() and curl would 404.
       - name: Start server and wait for /stats
         run: |
-          youtube-search-server > /tmp/server.log 2>&1 &
+          reelm-server > /tmp/server.log 2>&1 &
           for i in {1..15}; do
             if curl -sf http://localhost:7799/stats > /dev/null; then
               echo "Server up after ${i}s"
@@ -73,7 +73,7 @@ jobs:
 
       # Maintenance should run cleanly even with an empty DB.
       - name: Run maintenance once
-        run: youtube-search-maintain
+        run: reelm-maintain
 
       # `if: failure()` only runs this step when an earlier step failed —
       # gives us the server log to diagnose what went wrong.

@@ -1,8 +1,8 @@
-class YoutubeSearch < Formula
+class Reelm < Formula
   desc "Save & search YouTube transcripts locally (Chrome ext + local server)"
   homepage "https://github.com/Woodman11/youtube-search"
-  url "https://github.com/Woodman11/youtube-search/archive/refs/tags/v0.1.1.tar.gz"
-  sha256 "8517ab0c616c15ca3a1ca34405442aea68808d8af4c1c9a0217978640c425972"
+  url "https://github.com/Woodman11/youtube-search/archive/refs/tags/v0.2.0.tar.gz"
+  sha256 "b104a167e04e78a6895938b592002826a426aef3fe6c34db26735bc6c5f83770"
   license "MIT"
 
   depends_on "python@3.13"
@@ -17,9 +17,9 @@ class YoutubeSearch < Formula
     ytdlp_bin = Formula["yt-dlp"].opt_bin
 
     {
-      "server"   => "youtube-search-server",
-      "maintain" => "youtube-search-maintain",
-      "search"   => "youtube-search",
+      "server"   => "reelm-server",
+      "maintain" => "reelm-maintain",
+      "search"   => "reelm",
     }.each do |script, cmd|
       (bin/cmd).write <<~SH
         #!/bin/bash
@@ -30,10 +30,10 @@ class YoutubeSearch < Formula
   end
 
   service do
-    run [opt_bin/"youtube-search-server"]
+    run [opt_bin/"reelm-server"]
     keep_alive true
-    log_path var/"log/youtube-search/server.log"
-    error_log_path var/"log/youtube-search/server.log"
+    log_path var/"log/reelm/server.log"
+    error_log_path var/"log/reelm/server.log"
   end
 
   def caveats
@@ -45,17 +45,19 @@ class YoutubeSearch < Formula
         4. Pin the icon if you want the popup search
 
       Start the server in the background:
-        brew services start youtube-search
+        brew services start reelm
 
       The maintenance job (retry failed transcripts, optimize FTS, vacuum,
       rotate logs) is not auto-scheduled by this formula. Run it manually
-      with `youtube-search-maintain`, or schedule it via launchd/cron.
+      with `reelm-maintain`, or schedule it via launchd/cron.
 
-      Database lives at: ~/Library/Application Support/MyYouTubeSearch/
+      Database lives at: ~/Library/Application Support/Reelm/
+      (an existing ~/Library/Application Support/MyYouTubeSearch/ DB will
+      be migrated automatically on first run.)
     EOS
   end
 
   test do
-    system bin/"youtube-search", "--help"
+    system bin/"reelm", "--help"
   end
 end
