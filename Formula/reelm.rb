@@ -30,11 +30,16 @@ class Reelm < Formula
     end
   end
 
+  def post_install
+    system "mkdir", "-p", "#{Dir.home}/Library/Logs/reelm"
+    system "mkdir", "-p", "#{Dir.home}/Library/Application Support/Reelm"
+  end
+
   service do
     run [opt_bin/"reelm-server"]
     keep_alive true
-    log_path var/"log/reelm/server.log"
-    error_log_path var/"log/reelm/server.log"
+    log_path "#{Dir.home}/Library/Logs/reelm/server.log"
+    error_log_path "#{Dir.home}/Library/Logs/reelm/server.log"
   end
 
   def caveats
@@ -48,13 +53,16 @@ class Reelm < Formula
       Start the server in the background:
         brew services start reelm
 
+      If macOS blocks the service at first login, go to:
+        System Settings → General → Login Items & Extensions
+      Find reeLm and enable it, then: brew services restart reelm
+
       The maintenance job (retry failed transcripts, optimize FTS, vacuum,
       rotate logs) is not auto-scheduled by this formula. Run it manually
       with `reelm-maintain`, or schedule it via launchd/cron.
 
-      Database lives at: ~/Library/Application Support/Reelm/
-      (an existing ~/Library/Application Support/MyYouTubeSearch/ DB will
-      be migrated automatically on first run.)
+      Database:  ~/Library/Application Support/Reelm/videos.db
+      Logs:      ~/Library/Logs/reelm/server.log
     EOS
   end
 
