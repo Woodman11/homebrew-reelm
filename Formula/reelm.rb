@@ -21,6 +21,8 @@ class Reelm < Formula
   def post_install
     FileUtils.mkdir_p "#{Dir.home}/Library/Logs/reelm"
     FileUtils.mkdir_p "#{Dir.home}/Library/Application Support/Reelm"
+  rescue StandardError
+    nil
   end
 
   service do

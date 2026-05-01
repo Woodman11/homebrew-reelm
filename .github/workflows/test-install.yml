@@ -39,18 +39,16 @@ jobs:
           brew tap Woodman11/reelm "$GITHUB_WORKSPACE"
           brew install Woodman11/reelm/reelm
 
-      # Smoke test: did the wrappers land on PATH and run at all?
+      # Smoke test: did the binaries land on PATH and run at all?
       - name: Verify CLI binaries
         run: |
-          which reelm reelm-server reelm-maintain
+          which reelm reelm-maintain
           reelm --help
 
       # Start the server in the background, then poll until it's listening.
-      # Polling is necessary because the `&` returns instantly — without
-      # the wait loop we'd race the bind() and curl would 404.
       - name: Start server and wait for /stats
         run: |
-          reelm-server > /tmp/server.log 2>&1 &
+          reelm serve > /tmp/server.log 2>&1 &
           for i in {1..15}; do
             if curl -sf http://localhost:7799/stats > /dev/null; then
               echo "Server up after ${i}s"
@@ -63,17 +61,16 @@ jobs:
           exit 1
 
       # On a fresh install the DB is empty, so /stats should report zeros.
-      # `grep -q` exits non-zero if the pattern isn't found, which fails
-      # the step and the workflow.
+      # JSON is compact (no spaces) — match accordingly.
       - name: Verify /stats returns empty fresh state
         run: |
           curl -sf http://localhost:7799/stats | tee /tmp/stats.json
-          grep -q '"total": 0' /tmp/stats.json
-          grep -q '"indexed": 0' /tmp/stats.json
+          grep -q '"total":0' /tmp/stats.json
+          grep -q '"indexed":0' /tmp/stats.json
 
       # Maintenance should run cleanly even with an empty DB.
       - name: Run maintenance once
-        run: reelm-maintain
+        run: reelm maintain
 
       # `if: failure()` only runs this step when an earlier step failed —
       # gives us the server log to diagnose what went wrong.
