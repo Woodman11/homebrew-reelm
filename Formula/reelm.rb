@@ -61,6 +61,6 @@ class Reelm < Formula
   end
 
   test do
-    system bin/"reelm", "--help"
+    assert_match "usage", shell_output("#{bin}/reelm 2>&1", 1)
   end
 end

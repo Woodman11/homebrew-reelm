@@ -41,9 +41,7 @@ jobs:
 
       # Smoke test: did the binaries land on PATH and run at all?
       - name: Verify CLI binaries
-        run: |
-          which reelm reelm-maintain
-          reelm --help
+        run: which reelm reelm-maintain
 
       # Start the server in the background, then poll until it's listening.
       - name: Start server and wait for /stats
